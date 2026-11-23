@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xingjin</groupId>
+    <artifactId>xingjin-dripleaf-duprefixer</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>XingJin-DripleafDupFixer</name>
+    <description>Fix the broken small dripleaf bone meal ghost block dupe (Paper 1.17.1-26.3)</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 编译目标取最低支持版本 1.17.1：所有用到的 API 均已在 1.17.1 核对存在，
+             单 jar 可运行于 1.17.1 ~ 26.3 -->
+        <paper.version>1.17.1-R0.1-SNAPSHOT</paper.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Paper API：编译期依赖，运行期由服务端提供，不打进 jar -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>XingJin-DripleafDupFixer-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <!--
+                      注意：不要用 <release>17</release>。
+                      paper-api 快照依赖的传递库可能含更高字节码，release 模式会因 JDK 内部 API 校验失败。
+                      这里用 source/target 17：产出 Java 17 字节码，编译机需 JDK 17+。
+                    -->
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,23 @@
+# ---- Maven 构建产物 ----
+target/
+*.class
+
+# ---- IDE ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# ---- 临时 / 日志 ----
+*.log
+javac.log
+.verify-libs/
+.verify-out/
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db

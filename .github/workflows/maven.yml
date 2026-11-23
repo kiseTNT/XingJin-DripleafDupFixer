@@ -1,0 +1,74 @@
+name: Build & Release
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0); leave empty for build only'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build plugin jar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 产出 Java 17 字节码，编译机使用 JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean package
+
+      - name: Verify jar contents
+        run: |
+          JAR=$(find target -maxdepth 1 -name '*.jar' ! -name '*sources*' | head -1)
+          test -n "$JAR" || { echo "No jar produced"; exit 1; }
+          echo "Built: $JAR"
+          unzip -p "$JAR" plugin.yml | head -8
+
+      - name: Upload plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: XingJin-DripleafDupFixer
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 90
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download plugin jar
+        uses: actions/download-artifact@v4
+        with:
+          name: XingJin-DripleafDupFixer
+          path: dist
+
+      - name: Create Release and upload jar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          files: dist/*.jar
+          generate_release_notes: true
+          prerelease: ${{ contains(inputs.tag || github.ref_name, '-') }}

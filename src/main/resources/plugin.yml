@@ -1,0 +1,20 @@
+name: XingJin-DripleafDupFixer
+version: 1.0.0
+main: com.xingjin.dripleafdup.XingJinDripleafDupFixer
+api-version: '1.17'
+authors: [kise_TNT]
+description: 修复残缺小型垂滴叶（Small Dripleaf）骨粉催熟导致的幽灵方块刷物品 Dup 漏洞
+load: POSTWORLD
+
+commands:
+  dripleafdup:
+    description: XingJin-DripleafDupFixer 管理命令（重载配置）
+    usage: /dripleafdup reload
+    aliases: [ddf, dlfix]
+    permission: xingjin.dripleaf.admin
+    permission-message: §c你没有权限使用该命令。
+
+permissions:
+  xingjin.dripleaf.admin:
+    description: 接收残缺垂滴叶 BUG 告警，并使用 /dripleafdup reload
+    default: op
